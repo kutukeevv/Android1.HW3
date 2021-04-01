@@ -1,8 +1,6 @@
 package com.example.myapplication;
 
 import android.content.Context;
-import android.content.DialogInterface;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,10 +15,15 @@ import java.util.List;
 public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.RecyclerViewHolder> {
     private List<ChatModel> list;
     private LayoutInflater inflater;
+    private OnItemClickListener listener;
+    private ChatModel chatModel;
+    private Context context;
 
-    public RecyclerAdapter(Context context, List<ChatModel> list) {
+    public RecyclerAdapter(Context context, List<ChatModel> list, OnItemClickListener listener) {
         this.inflater = LayoutInflater.from(context);
         this.list = list;
+        this.context = context;
+        this.listener = listener;
     }
 
     @NonNull
@@ -32,9 +35,10 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerAdapter.RecyclerViewHolder holder, int position) {
-        ChatModel chatModel = list.get(position);
-        holder.userName.setText(chatModel.chatName);
-        holder.lastMessage.setText(chatModel.lastMessage);
+        chatModel = list.get(position);
+        holder.userName.setText(chatModel.getChatName());
+        holder.lastMessage.setText(chatModel.getLastMessage());
+        holder.itemView.setOnClickListener(v -> listener.onItemClick(position, chatModel));
     }
 
     @Override
@@ -42,7 +46,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
         return list.size();
     }
 
-    public class RecyclerViewHolder extends RecyclerView.ViewHolder {
+    public class RecyclerViewHolder extends RecyclerView.ViewHolder{
         private TextView userName;
         private TextView lastMessage;
 
@@ -50,12 +54,6 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
             super(itemView);
             userName = itemView.findViewById(R.id.item_user_name_txt);
             lastMessage = itemView.findViewById(R.id.item_chat_last_message_txt);
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Toast.makeText(itemView.getContext(), "Info:", Toast.LENGTH_SHORT).show();
-                }
-            });
         }
     }
 }
